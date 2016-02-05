@@ -1,0 +1,35 @@
+{
+  "name": "node4-hearts-es2015",
+  "version": "0.0.1",
+  "authors": [
+    "azder <azhder@gmail.com>"
+  ],
+  "description": "presentation made in remark",
+  "main": "index.html",
+  "moduleType": [],
+  "keywords": [
+    "nodejs",
+    "node",
+    "4",
+    "nodejs",
+    "4",
+    "es2015",
+    "es6",
+    "ecmascript",
+    "js",
+    "javascript"
+  ],
+  "license": "GFDL",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "font-awesome": "~4.4.0",
+    "remark": "~0.12.0"
+  }
+}

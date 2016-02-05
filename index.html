@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="UTF-8"/>
+    <title>Node.js 4 &hearts; ES2015</title>
+
+    <link href="style.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+</head>
+<body>
+
+<pre id="source">
+
+    class: center, middle, inverse
+
+    #.color-dark[ .bgcolor-node.pad[Node.js 4].bgcolor-heart.color-light.pad[&hearts;]️.bgcolor-js.pad[&nbsp;ES 2015&nbsp;] ]
+
+
+    Goran Peoski
+
+    ???
+
+    - Notes for the _first_ slide!
+    - Ask some questions.
+
+    ---
+
+
+    ## What is Node.js
+
+    - open-source, cross-platform runtime environment for developing server-side web applications
+    - optimizes an application's throughput and scalability for real-time
+    - event-driven architecture and a non-blocking I/O API
+
+    ### **V8 for ECMAScript (JavaScript)**
+    - built for _Google Chrome_, open-sourced by _Google_ in 2008.
+    - Written in _C++_,
+    - compiles _JS_ source code to native instead of interpreting in real time
+    - used by different front-end and back-end tools written in _JS_
+
+    ???
+    the most importaint part for this presentation
+    ---
+
+    ## Short History
+
+    ### November 2009
+    - presented by _Ryan Dahl_ and other developers working at _Joyent_
+
+    ### December 2014
+    - _Fedor Indutny_ started **io.js** - a **fork** of Node.js.
+    - open governance alternative with a separate technical committee
+
+    ### February 2015
+    - intent to form a neutral _Node.js Foundation_ was announced
+
+    ### June 2015
+    - _Node.js_ and _io.js_ communities voted to work together under the _Node.js Foundation_
+
+    ---
+
+    ## Versions
+
+    ### Node.js
+
+    - latest versions as of .fa.fa-calendar[13 October 2015]
+    .console[]
+            $ nave ls-all | tail -n 2
+            0.12.4 0.12.5 0.12.6 0.12.7 4.0.0 4.1.0 4.1.1 4.1.2 4.2.0
+    - _V8 v4.5_ for _Node.js 4.0.0_ is the **same version** as in _Google Chrome 45_
+    - [https://nodejs.org/en/blog/release/v4.0.0/](https://nodejs.org/en/blog/release/v4.0.0/)
+
+    ### The missing versions?
+
+    - io.js - v1.0.0 - .fa.fa-calendar[14 January 2015] - v8 **3.31**.74.1
+    - io.js - v3.3.1 - .fa.fa-calendar[15 September 2015] - v8 **4.4**.63.30
+
+    ---
+
+    ## Functionalities
+
+    _ES2015_ (formerly _ES6_) functionalities are split into 3 groups:
+
+    ### .fa.fa-smile-o.color-node[] Shipping
+    - V8 considers stable
+    - **turned on by default in Node.js**
+
+    ### .fa.fa-meh-o.color-js[] Staged
+    - almost-completed features that are not considered stable by the _V8 team_
+    - require a **single runtime flag**: `--es_staging` (or older alias `--harmony`)
+
+    ### .fa.fa-frown-o.color-heart[] In progress
+    - activated individually by their respective harmony flag (e.g. `--harmony_destructuring`)
+    - highly discouraged unless for testing purposes
+    - .warncaps.color-heart[use at your own risk]
+
+    ---
+
+    ## Flags List
+
+    How to find out the possible flags?
+
+    ### All of them
+    ```bash
+    *$ node --v8-options | grep harmony
+    --es_staging (enable all completed harmony features)
+    --harmony (enable all completed harmony features)
+    --harmony_shipping (enable all shipped harmony fetaures)
+    --harmony_modules (enable "harmony modules" (in progress))
+    --harmony_proxies (enable "harmony proxies" (in progress))
+    ```
+    ### Just the "in progress" ones
+    ```bash
+    *$ node --v8-options | grep "in progress"
+    --harmony_modules (enable "harmony modules" (in progress))
+    --harmony_array_includes (enable "harmony Array.prototype.includes" (in progress))
+    --harmony_regexps (enable "harmony regular expression extensions" (in progress))
+    --harmony_proxies (enable "harmony proxies" (in progress))
+    ```
+
+    <br>
+    .aside.smaller.right[***** _these examples only include a short list of the actual results_]
+
+    ---
+
+    ## Shipping ones
+    ### Block scoping
+    - `let`, `const`, `function`-in-blocks
+    - **strict mode only**... for now
+    .aside.smaller.color-lighter[
+    _As of v8 3.31.74.1, block-scoped declarations are intentionally implemented with a non-compliant limitation to
+    strict mode code. Developers should be aware that this will change as v8 continues towards ES6 specification
+    compliance._    ]
+
+    ### Collections
+    - `Map`, `WeakMap`, `Set`, `WeakSet`
+
+    ### Literals
+    - _Binary_, _Octal_ and _Object literal_ extensions (shorthand properties and methods)
+
+    ### Also
+    - Typed arrays, New String methods, and more... .warncaps.color-heart[beware, code follows]
+
+    ---
+    ## Node.js with Symbols
+
+        let a = {};
+
+        // no `new` keyword
+        let debugSymbol = Symbol('just a DEBUG symbol');
+
+        console.log(debugSymbol.name); // 'just a DEBUG symbol'
+
+        a[debugSymbol] = 'This property value is identified by a symbol';
+
+        let a = Map();
+        a.set(Symbol(), 'Noise');
+
+
+        // although the one element cannot be accessed
+        console.log(a.size); // 1
+
+    ---
+    ## Node.js with Generators
+        function* argumentsGenerator() {
+            for (let i = 0; i < arguments.length; i += 1) {
+                yield arguments[i];
+            }
+        }
+
+        let iter = argumentsGenerator('a', 'b', 'c');
+
+        console.log(iter.next().value, iter.next().value, iter.next().value); // a b c
+
+        for (let value of argumentsGenerator('a', 'b', 'c')) {
+            console.log(value);
+        }
+        // a b c
+
+        function* fibonacci() {
+
+            let a = 0, b = 1;
+
+            while (true) {
+                yield a;
+                let c = a + b;
+                a = b;
+                b = c;
+            }
+        }
+    ---
+
+    ## Node.js with Arrow Functions
+
+    - Fat arrows vs. the good ol' `function` functions
+
+            const foo = () => console.log('in foo');
+            // ~like function foo() { console.log(...) }
+
+            const bar = x => console.log('in bar with', x);
+            // ~like function bar(x) { console.log(...) }
+
+            const gru = (x, y) => console.log('in gru with', x, y);
+            // ~like function gru(x,y) { console.log(...) }
+
+            const pup = () => {
+                console.log('in pup with');
+                console.log('...nothing');
+            };
+
+            foo();      // in foo
+            bar(42);    // in bar with 42
+            gru(1, 99); // in gru with 1 99
+            pup();      // in pup with
+
+    ???
+    - no own `this`, captures from context
+    - can't be constructor
+    - w/ expression => has implicit `return`
+    - w/ block => has to have explocit `return` to return a value
+    ---
+
+    ## Node.js with Template strings
+
+        let x = 'World', y = "Hello";
+
+        console.log(`${y}, ${x}`) // 'Hello, World'
+
+        console.log(
+        `multi
+        line
+        strings`
+        );
+
+        const texter = () => {
+            let lines = [];
+            return (strings /*, value, value */) =>
+            !strings ?
+            lines.join('\n') :
+            lines.push(interpolate(strings, _.toArray(arguments).slice(1)));
+        };
+
+        const text = texter();
+
+        text`Hello`;
+        text`line number: ${1 + 1}`;
+        text`Later`;
+
+        console.log(text());
+
+        // Hello
+        // line number: 2
+        // Later
+    ---
+
+    ## Node.js with Tagged Template Strings
+    - Chopping down into arguments
+    ```
+    text`Hello`
+    ```
+    .fa.fa-long-arrow-right[]
+    ```
+    text( ["Hello"] , [ ])
+    ```
+    and
+    ```
+    text`line number: ${1+1}`
+    ```
+    .fa.fa-long-arrow-right[]
+    ```
+    text(["line number: ",""],[2])
+    ```
+
+    - A built in tag
+    ```
+    String.raw`Hi\n${2+3}!`; // "Hi\\n5!
+    ```
+
+    ---
+
+
+    ## Node.js with Classes
+    - **strict mode only**... for good .smaller.color-lighter[(classes have strict-by-definition bodies)]
+
+
+    ```
+    function Animal(name) {
+        this.name = name;
+    }
+
+    Animal.prototype.speak = function speak() {
+        console.log('hi, my name is ' + this.name);
+    };
+
+    new Animal('Bob').speak();  // hi, my name is Bob
+    ```
+
+    .fa.fa-long-arrow-right[]
+
+    ```
+    class Animal {
+
+        constructor(name) {
+            this.name = name;
+        }
+
+        speak() {
+            console.log(`hi, my name is ${this.name}`)
+        }
+    }
+
+    new Animal('Bob').speak(); // hi, my name is Bob
+    ```
+
+    ---
+
+    ## Node.js with Subclasses
+
+    ```
+    class Animal {
+        species() {
+            throw new Error('abstract method');
+        }
+
+        static all() {
+            return [Frog];
+        }
+    }
+
+    class Frog extends Animal {
+        species() {
+            return 'frog';
+        }
+    }
+
+
+    let frog = new Frog(), animal = new Animal();
+
+    console.log( frog.species() );  // frog
+
+    console.log( animal.species ); // [Function: species] // if called -> Error: abstract method
+
+    console.log( Animal.all(), Frog.all() ); // [ [Function: Frog] ] [ [Function: Frog] ]
+
+    console.log( animal.all ); // undefined // if called -> TypeError: animal.all is not a function
+    ```
+    ---
+
+    ## Node.js with Promises
+
+    ```
+    let otherPromise = new Promise((resolve, reject) => resolve('some other promise!'));
+
+    const doSomething = param => {
+
+        if (!param) {
+            return Promise.reject(Error('bad param'));
+        }
+
+        return new Promise(
+            (resolve, reject) =>resolve('foo')
+        ).then(
+                // value is already resolved, just return it
+                result => result
+        ).then(
+                // Can continue chaining thens as long as returning a value or a promise
+                result => Promise.resolve(otherPromise)
+        ).then(
+                result => `${result} resolved`
+        );
+    };
+
+    doSomething('asynchronous').then(
+            finalResult =>  console.log(`Final result: ${finalResult}`)
+            // Final result: some other promise! resolved
+    ).catch(
+            e => console.log(`Catch handler: ${e}`)
+    );
+    ```
+    ---
+
+    ## In progress with Proxies
+
+    ```bash
+    $ node --harmony_proxies proxy.js
+    ```
+
+
+    ```
+    let proxyObject = (object, handler) => { /* workaround using Proxy.create(handler, object) */ };
+
+    let proxyFunction = (fn, handler) => { /* workaround using Proxy.createFunction(handler, fn) */ };
+
+    let life = proxyObject({
+            test: true
+        }, {
+            get: (target, key, receiver) => (key in target) ? target[key] : receiver
+        }
+    );
+
+    let take = proxyFunction( () => 5, {} );
+
+    console.log(life.is.such.a.weird.thing.to.test); // true
+
+    console.log(take()); // 5
+    ```
+
+    ---
+
+    ## Missing In Action Modules
+
+    - Node.js still uses CommonJS modules
+
+    ---
+
+    ## Support
+
+    Always check [https://kangax.github.io/compat-table/es6/](https://kangax.github.io/compat-table/es6/)
+
+    - 71% - _Babel.js_
+    - 70% - _Firefox 41_
+    - 67% - _Edge 12_
+    - 58% - _Chrome 45_
+    - 54% - _iOS 9_ / _Safari 9_
+    - 53% - _Node.js 4.0_ (up from 12% - _Node 0.12_)
+    - 29% - _Android 5.1_
+    - 20% - _IE 11_
+
+    ---
+
+    class: center, middle
+    # .color-heart[Thank You]
+
+</pre>
+
+<script src="bower_components/remark/out/remark.min.js" type="text/javascript">
+</script>
+<script src="script.js"></script>
+</body>
+</html>
